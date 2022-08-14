@@ -11,8 +11,8 @@ init_disp = 0
 init_vel = 1
 
 # simulation time, timestep and time (global varaible)
-t_max = 100
-dt = 0.1
+t_max = 1000
+dt = 1.9999
 t_array = np.arange(0, t_max, dt)
 
 # initialise empty lists to record trajectories
@@ -74,12 +74,10 @@ if __name__ == "__main__":
     x_array = np.array(euler_results[0])
     v_array = np.array(euler_results[1])
     """
-    
-    
     verlet_results = Verlet(x_list,v_list,init_disp,init_vel)
     x_array = np.array(verlet_results[0])
     v_array = np.array(verlet_results[1])
-
+    
     # plot the position-time graph
     plt.figure(1)
     plt.clf()
