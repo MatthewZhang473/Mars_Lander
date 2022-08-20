@@ -9,10 +9,12 @@
 // is acknowledged and (b) no modified versions of the source code are
 // published. Restriction (b) is designed to protect the integrity of the
 // exercise for future generations of students. The authors would be happy
-// to receive any suggested modifications by private correspondence to
+// to receive any suggested    by private correspondence to
 // ahg@eng.cam.ac.uk and gc121@eng.cam.ac.uk.
-
+#define _USE_MATH_DEFINES
 #include "lander.h"
+#include "math.h"
+#include <cmath>
 
 void autopilot (void)
   // Autopilot to adjust the engine throttle, parachute and attitude control
@@ -20,11 +22,76 @@ void autopilot (void)
   // INSERT YOUR CODE HERE
 }
 
+vector3d gravity (vector3d force_posi)
+  // Calculate the gravity force at given postion.
+  // force_posi is the position at which we calculate the gravitational force.
+{
+    vector3d F_G;
+    double dist,tot_mass;
+    dist = force_posi.abs();
+    tot_mass = FUEL_DENSITY * (fuel * FUEL_CAPACITY);
+    F_G = - GRAVITY * MARS_MASS * (tot_mass) * force_posi / pow(dist,3.0);
+    return F_G;
+}
+
+vector3d drag (vector3d force_posi, vector3d force_vel)
+  // Find the drag force given the position and velocity.
+{
+  double density, proj_area, vel_mag;
+  vector3d F_D;
+  vel_mag = force_vel.abs();
+
+
+  proj_area = M_PI * pow(LANDER_SIZE,2.0);
+  density = atmospheric_density(force_posi);
+  F_D = - 0.5 * density * DRAG_COEF_LANDER * proj_area * vel_mag *force_vel;
+  return F_D;
+}
+
+
+
 void numerical_dynamics (void)
   // This is the function that performs the numerical integration to update the
   // lander's pose. The time step is delta_t (global variable).
 {
   // INSERT YOUR CODE HERE
+
+  static vector3d previous_position;
+  vector3d new_position;
+
+  vector3d acceleration, tot_force;
+  double tot_mass;
+  tot_mass = FUEL_DENSITY * (fuel * FUEL_CAPACITY);
+
+
+  if (simulation_time == 0.0) {
+
+    // do an Euler update for the first iteration
+
+    // i.e. new_position = .... (Euler update, using position and velocity)
+
+    // velocity = .... (Euler update, using acceleration)  
+    
+    acceleration = (gravity(position) + drag(position,velocity))/ tot_mass;
+    new_position = position + delta_t * velocity;
+    velocity = velocity + acceleration * delta_t;
+
+  } else {
+    // do a Verlet update on all subsequent iterations
+
+    // i.e. new_position = .... (Verlet update, using position and previous_position)
+
+    // velocity = ... (Verlet update, using new_position and position)
+    tot_force = gravity(position) + drag(position,velocity);
+    new_position = 2 * position - previous_position + pow(delta_t,2.0) * tot_force / tot_mass;
+    velocity = (new_position - position)/delta_t;
+  }
+
+  previous_position = position;
+
+  position = new_position;
+
+
 
   // Here we can apply an autopilot to adjust the thrust, parachute and attitude
   if (autopilot_enabled) autopilot();
