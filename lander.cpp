@@ -15,14 +15,50 @@
 #include "lander.h"
 #include "math.h"
 #include <cmath>
+#include <fstream>
+
+void throttle_contr(double contr_gain, double err, double thre){
+  double P_out;
+  P_out = err * contr_gain;
+
+  if (P_out <= -thre){
+    throttle = 0;
+  }
+  else if(-thre < P_out && P_out < 1 - thre){
+    throttle = thre + P_out;
+  }
+  else{
+    throttle = 1;
+  }
+}
+
+void plotting(double x, double y){
+  ofstream fout;
+  fout.open("control_plot.txt",std::ios_base::app);
+  if (fout) { // file opened successfully
+    fout << x << ' ' << y << endl;
+  } else { // file did not open successfully
+    cout << "Could not open trajectory file for writing" << endl;
+  }
+}
 
 void autopilot (void)
   // Autopilot to adjust the engine throttle, parachute and attitude control
 {
   // INSERT YOUR CODE HERE
+  vector3d r_hat;
+  double Kh, Kp,error,Pout,height,del;
 
+  height = position.abs()- MARS_RADIUS;
+  r_hat = position.norm();
+  Kh = 0.001;
+  Kp = 100;
+  del = 0.1;
+  error = - (0.5 + Kh * height + velocity * r_hat);
 
-
+  throttle_contr(Kp,error,del);
+  //cout << error;
+  plotting(height,velocity * r_hat);
   
 }
 
