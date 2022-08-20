@@ -9,6 +9,7 @@ int main() {
   // declare variables
   double m, k, x, v, t_max, dt, t, a;
   vector<double> t_list, x_list, v_list;
+  double x_cur, x_prev, F;
 
   // mass, spring constant, initial position and velocity
   m = 1;
@@ -28,11 +29,19 @@ int main() {
     x_list.push_back(x);
     v_list.push_back(v);
 
-    // calculate new position and velocity
-    a = -k * x / m;
-    x = x + dt * v;
-    v = v + dt * a;
-
+    x_cur = x;
+    if(t==0){
+      // calculate new position and velocity
+      a = -k * x / m;
+      x = x + dt * v;
+      v = v + dt * a;
+    }
+    else{
+      F = -k * x;
+      x = 2 * x - x_prev + (dt*dt)*F/m;
+      v = (x - x_cur)/dt;
+    }
+    x_prev = x_cur;
   }
 
   // Write the trajectories to file
