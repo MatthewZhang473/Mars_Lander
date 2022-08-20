@@ -29,7 +29,7 @@ vector3d gravity (vector3d force_posi)
     vector3d F_G;
     double dist,tot_mass;
     dist = force_posi.abs();
-    tot_mass = FUEL_DENSITY * (fuel * FUEL_CAPACITY);
+    tot_mass = UNLOADED_LANDER_MASS + FUEL_DENSITY * (fuel * FUEL_CAPACITY);
     F_G = - GRAVITY * MARS_MASS * (tot_mass) * force_posi / pow(dist,3.0);
     return F_G;
 }
@@ -61,7 +61,7 @@ void numerical_dynamics (void)
 
   vector3d acceleration, tot_force;
   double tot_mass;
-  tot_mass = FUEL_DENSITY * (fuel * FUEL_CAPACITY);
+  tot_mass = UNLOADED_LANDER_MASS + FUEL_DENSITY * (fuel * FUEL_CAPACITY);
 
 
   if (simulation_time == 0.0) {
