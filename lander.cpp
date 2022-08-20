@@ -20,6 +20,10 @@ void autopilot (void)
   // Autopilot to adjust the engine throttle, parachute and attitude control
 {
   // INSERT YOUR CODE HERE
+
+
+
+  
 }
 
 vector3d gravity (vector3d force_posi)
@@ -45,6 +49,13 @@ vector3d drag (vector3d force_posi, vector3d force_vel)
   proj_area = M_PI * pow(LANDER_SIZE,2.0);
   density = atmospheric_density(force_posi);
   F_D = - 0.5 * density * DRAG_COEF_LANDER * proj_area * vel_mag *force_vel;
+
+  if (parachute_status == DEPLOYED){
+    double chute_area;
+    chute_area = 5 * pow((2*LANDER_SIZE),2);
+    F_D += - 0.5 * density * DRAG_COEF_CHUTE * chute_area * vel_mag *force_vel;
+  }
+
   return F_D;
 }
 
